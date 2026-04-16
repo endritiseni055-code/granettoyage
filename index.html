@@ -32,7 +32,7 @@
     }
 
     .container {
-      max-width: 1000px;
+      max-width: 1100px;
       margin: 20px auto;
       padding: 12px;
     }
@@ -84,6 +84,10 @@
 
     button.danger {
       background: #b91c1c;
+    }
+
+    button.green {
+      background: #166534;
     }
 
     button:disabled {
@@ -142,7 +146,7 @@
       font-weight: bold;
     }
 
-    .history-item {
+    .history-item, .list-item, .client-item {
       border: 1px solid #e2e8f0;
       border-radius: 12px;
       padding: 12px;
@@ -150,7 +154,7 @@
       background: #fff;
     }
 
-    .history-title {
+    .history-title, .list-title, .client-title {
       font-weight: bold;
       margin-bottom: 6px;
     }
@@ -172,6 +176,14 @@
       border: 1px dashed #cbd5e1;
       border-radius: 12px;
       color: #64748b;
+      background: #f8fafc;
+    }
+
+    .sub-box {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 12px;
       background: #f8fafc;
     }
 
@@ -199,23 +211,23 @@
   <div class="container">
 
     <div class="card" id="loginCard">
-      <h2>Connexion employé</h2>
-      <label for="user">Prénom / identifiant</label>
-      <input id="user" placeholder="Ex: Albania" />
+      <h2>Connexion</h2>
+
+      <label for="user">ID</label>
+      <input id="user" placeholder="ID" />
 
       <label for="pass">Mot de passe</label>
       <input id="pass" type="password" placeholder="Mot de passe" />
 
       <button onclick="login()">Se connecter</button>
-      <p class="small">Compte demandé : Albania / Pontarlier25</p>
     </div>
 
     <div id="app" style="display:none;">
       <div class="card">
         <div class="top-row">
           <div>
-            <h2 style="margin-bottom:6px;">Bienvenue <span id="employeeName"></span></h2>
-            <div class="small">Les heures sont enregistrées automatiquement sur cet appareil.</div>
+            <h2 style="margin-bottom:6px;">Espace de travail</h2>
+            <div class="small">Les données sont enregistrées automatiquement sur cet appareil.</div>
           </div>
           <div class="actions">
             <button class="secondary" onclick="logout()">Se déconnecter</button>
@@ -223,18 +235,31 @@
         </div>
       </div>
 
+      <div class="card">
+        <h3>Listes et clients</h3>
+
+        <label for="newListName">Créer une liste</label>
+        <input id="newListName" placeholder="Ex: Bureau, Chantier, Zone A..." />
+        <button class="green" onclick="createList()">Créer la liste</button>
+
+        <div id="listsContainer" style="margin-top:16px;"></div>
+      </div>
+
       <div class="grid grid-2">
         <div class="card">
           <h3>Minuteur</h3>
 
+          <label for="timerList">Liste</label>
+          <select id="timerList" onchange="refreshTimerClients()"></select>
+
           <label for="timerClient">Client</label>
-          <input id="timerClient" placeholder="Nom du client" />
+          <select id="timerClient"></select>
 
           <label for="timerDate">Date</label>
           <input id="timerDate" type="date" />
 
-          <label for="timerNotes">Notes</label>
-          <textarea id="timerNotes" placeholder="Détails du travail"></textarea>
+          <label for="timerNotes">Remarque</label>
+          <textarea id="timerNotes" placeholder="Ajouter une remarque"></textarea>
 
           <div class="timer-box">
             <div>Temps en cours</div>
@@ -251,8 +276,11 @@
         <div class="card">
           <h3>Saisie manuelle</h3>
 
+          <label for="manualList">Liste</label>
+          <select id="manualList" onchange="refreshManualClients()"></select>
+
           <label for="manualClient">Client</label>
-          <input id="manualClient" placeholder="Nom du client" />
+          <select id="manualClient"></select>
 
           <label for="manualDate">Date</label>
           <input id="manualDate" type="date" />
@@ -268,8 +296,8 @@
             </div>
           </div>
 
-          <label for="manualNotes">Notes</label>
-          <textarea id="manualNotes" placeholder="Détails du travail"></textarea>
+          <label for="manualNotes">Remarque</label>
+          <textarea id="manualNotes" placeholder="Ajouter une remarque"></textarea>
 
           <button onclick="saveManualEntry()">Enregistrer la saisie</button>
         </div>
@@ -293,9 +321,10 @@
       "Admin": "admin123"
     };
 
-    const HOURS_KEY = "granettoyage_hours_v2";
-    const USER_KEY = "granettoyage_current_user";
-    const TIMER_KEY = "granettoyage_running_timer_v2";
+    const HOURS_KEY = "granettoyage_hours_v3";
+    const USER_KEY = "granettoyage_current_user_v3";
+    const TIMER_KEY = "granettoyage_running_timer_v3";
+    const LISTS_KEY = "granettoyage_lists_v3";
 
     let timerInterval = null;
 
@@ -334,6 +363,14 @@
       localStorage.setItem(HOURS_KEY, JSON.stringify(data));
     }
 
+    function loadLists() {
+      return JSON.parse(localStorage.getItem(LISTS_KEY) || "[]");
+    }
+
+    function saveLists(data) {
+      localStorage.setItem(LISTS_KEY, JSON.stringify(data));
+    }
+
     function getCurrentUser() {
       return localStorage.getItem(USER_KEY);
     }
@@ -348,6 +385,23 @@
 
     function clearRunningTimer() {
       localStorage.removeItem(TIMER_KEY);
+    }
+
+    function ensureDefaultData() {
+      const lists = loadLists();
+      if (lists.length === 0) {
+        const defaultLists = [
+          {
+            id: Date.now(),
+            name: "Liste principale",
+            clients: [
+              { id: Date.now() + 1, name: "Client 1" },
+              { id: Date.now() + 2, name: "Client 2" }
+            ]
+          }
+        ];
+        saveLists(defaultLists);
+      }
     }
 
     function login() {
@@ -367,27 +421,226 @@
       stopVisualTimerOnly();
       document.getElementById("loginCard").style.display = "block";
       document.getElementById("app").style.display = "none";
+      document.getElementById("user").value = "";
+      document.getElementById("pass").value = "";
     }
 
     function showApp() {
-      const currentUser = getCurrentUser();
-      if (!currentUser) return;
+      ensureDefaultData();
 
       document.getElementById("loginCard").style.display = "none";
       document.getElementById("app").style.display = "block";
-      document.getElementById("employeeName").textContent = currentUser;
 
       document.getElementById("timerDate").value = todayDate();
       document.getElementById("manualDate").value = todayDate();
       document.getElementById("manualStart").value = currentTimeHM();
 
+      renderLists();
+      fillListSelects();
       renderHistory();
       restoreRunningTimer();
     }
 
+    function createList() {
+      const input = document.getElementById("newListName");
+      const name = input.value.trim();
+
+      if (!name) {
+        alert("Merci de saisir un nom de liste");
+        return;
+      }
+
+      const lists = loadLists();
+      lists.push({
+        id: Date.now(),
+        name: name,
+        clients: []
+      });
+
+      saveLists(lists);
+      input.value = "";
+      renderLists();
+      fillListSelects();
+    }
+
+    function deleteList(listId) {
+      const ok = confirm("Supprimer cette liste et ses clients ?");
+      if (!ok) return;
+
+      let lists = loadLists();
+      lists = lists.filter(l => l.id !== listId);
+      saveLists(lists);
+      renderLists();
+      fillListSelects();
+    }
+
+    function addClientToList(listId) {
+      const input = document.getElementById("clientInput_" + listId);
+      const clientName = input.value.trim();
+
+      if (!clientName) {
+        alert("Merci de saisir un client");
+        return;
+      }
+
+      const lists = loadLists();
+      const list = lists.find(l => l.id === listId);
+      if (!list) return;
+
+      list.clients.push({
+        id: Date.now(),
+        name: clientName
+      });
+
+      saveLists(lists);
+      input.value = "";
+      renderLists();
+      fillListSelects();
+    }
+
+    function deleteClientFromList(listId, clientId) {
+      const ok = confirm("Supprimer ce client ?");
+      if (!ok) return;
+
+      const lists = loadLists();
+      const list = lists.find(l => l.id === listId);
+      if (!list) return;
+
+      list.clients = list.clients.filter(c => c.id !== clientId);
+      saveLists(lists);
+      renderLists();
+      fillListSelects();
+    }
+
+    function renderLists() {
+      const container = document.getElementById("listsContainer");
+      const lists = loadLists();
+
+      if (lists.length === 0) {
+        container.innerHTML = '<div class="empty">Aucune liste créée.</div>';
+        return;
+      }
+
+      container.innerHTML = "";
+
+      lists.forEach(list => {
+        const div = document.createElement("div");
+        div.className = "list-item";
+
+        let clientsHtml = "";
+        if (list.clients.length === 0) {
+          clientsHtml = '<div class="empty">Aucun client dans cette liste.</div>';
+        } else {
+          list.clients.forEach(client => {
+            clientsHtml += `
+              <div class="client-item">
+                <div class="client-title">${client.name}</div>
+                <button class="danger" onclick="deleteClientFromList(${list.id}, ${client.id})">Supprimer le client</button>
+              </div>
+            `;
+          });
+        }
+
+        div.innerHTML = `
+          <div class="list-title">${list.name}</div>
+          <div class="actions">
+            <button class="danger" onclick="deleteList(${list.id})">Supprimer la liste</button>
+          </div>
+
+          <div class="sub-box">
+            <label>Ajouter un client</label>
+            <input id="clientInput_${list.id}" placeholder="Nom du client" />
+            <button class="green" onclick="addClientToList(${list.id})">Ajouter le client</button>
+          </div>
+
+          <div class="sub-box">
+            <strong>Clients</strong>
+            <div style="margin-top:10px;">${clientsHtml}</div>
+          </div>
+        `;
+
+        container.appendChild(div);
+      });
+    }
+
+    function fillListSelects() {
+      const lists = loadLists();
+      const timerList = document.getElementById("timerList");
+      const manualList = document.getElementById("manualList");
+
+      timerList.innerHTML = "";
+      manualList.innerHTML = "";
+
+      if (lists.length === 0) {
+        timerList.innerHTML = '<option value="">Aucune liste</option>';
+        manualList.innerHTML = '<option value="">Aucune liste</option>';
+        document.getElementById("timerClient").innerHTML = '<option value="">Aucun client</option>';
+        document.getElementById("manualClient").innerHTML = '<option value="">Aucun client</option>';
+        return;
+      }
+
+      lists.forEach(list => {
+        const opt1 = document.createElement("option");
+        opt1.value = list.id;
+        opt1.textContent = list.name;
+        timerList.appendChild(opt1);
+
+        const opt2 = document.createElement("option");
+        opt2.value = list.id;
+        opt2.textContent = list.name;
+        manualList.appendChild(opt2);
+      });
+
+      refreshTimerClients();
+      refreshManualClients();
+    }
+
+    function refreshTimerClients() {
+      const listId = Number(document.getElementById("timerList").value);
+      const timerClient = document.getElementById("timerClient");
+      const lists = loadLists();
+      const list = lists.find(l => l.id === listId);
+
+      timerClient.innerHTML = "";
+
+      if (!list || list.clients.length === 0) {
+        timerClient.innerHTML = '<option value="">Aucun client</option>';
+        return;
+      }
+
+      list.clients.forEach(client => {
+        const opt = document.createElement("option");
+        opt.value = client.name;
+        opt.textContent = client.name;
+        timerClient.appendChild(opt);
+      });
+    }
+
+    function refreshManualClients() {
+      const listId = Number(document.getElementById("manualList").value);
+      const manualClient = document.getElementById("manualClient");
+      const lists = loadLists();
+      const list = lists.find(l => l.id === listId);
+
+      manualClient.innerHTML = "";
+
+      if (!list || list.clients.length === 0) {
+        manualClient.innerHTML = '<option value="">Aucun client</option>';
+        return;
+      }
+
+      list.clients.forEach(client => {
+        const opt = document.createElement("option");
+        opt.value = client.name;
+        opt.textContent = client.name;
+        manualClient.appendChild(opt);
+      });
+    }
+
     function startTimer() {
       const currentUser = getCurrentUser();
-      const client = document.getElementById("timerClient").value.trim();
+      const selectedListId = document.getElementById("timerList").value;
+      const client = document.getElementById("timerClient").value;
       const date = document.getElementById("timerDate").value;
       const notes = document.getElementById("timerNotes").value.trim();
 
@@ -396,8 +649,13 @@
         return;
       }
 
+      if (!selectedListId) {
+        alert("Merci de choisir une liste");
+        return;
+      }
+
       if (!client) {
-        alert("Merci de renseigner le client");
+        alert("Merci de choisir un client");
         return;
       }
 
@@ -412,8 +670,12 @@
         return;
       }
 
+      const listName = getListNameById(Number(selectedListId));
+
       const timerData = {
         user: currentUser,
+        listId: Number(selectedListId),
+        listName: listName,
         client: client,
         date: date,
         notes: notes,
@@ -443,6 +705,7 @@
       hours.unshift({
         id: Date.now(),
         user: timerData.user,
+        listName: timerData.listName,
         client: timerData.client,
         date: timerData.date,
         start: startTime,
@@ -457,7 +720,6 @@
       clearRunningTimer();
       stopVisualTimerOnly();
 
-      document.getElementById("timerClient").value = "";
       document.getElementById("timerNotes").value = "";
       document.getElementById("timerDate").value = todayDate();
 
@@ -467,7 +729,8 @@
 
     function saveManualEntry() {
       const currentUser = getCurrentUser();
-      const client = document.getElementById("manualClient").value.trim();
+      const selectedListId = document.getElementById("manualList").value;
+      const client = document.getElementById("manualClient").value;
       const date = document.getElementById("manualDate").value;
       const start = document.getElementById("manualStart").value;
       const end = document.getElementById("manualEnd").value;
@@ -478,8 +741,13 @@
         return;
       }
 
+      if (!selectedListId) {
+        alert("Merci de choisir une liste");
+        return;
+      }
+
       if (!client || !date || !start || !end) {
-        alert("Merci de remplir client, date, début et fin");
+        alert("Merci de remplir liste, client, date, début et fin");
         return;
       }
 
@@ -493,11 +761,13 @@
 
       const durationSeconds = Math.floor((endDate - startDate) / 1000);
       const durationHours = durationSeconds / 3600;
+      const listName = getListNameById(Number(selectedListId));
 
       const hours = loadHours();
       hours.unshift({
         id: Date.now(),
         user: currentUser,
+        listName: listName,
         client: client,
         date: date,
         start: start,
@@ -510,13 +780,18 @@
 
       saveHours(hours);
 
-      document.getElementById("manualClient").value = "";
       document.getElementById("manualDate").value = todayDate();
       document.getElementById("manualStart").value = currentTimeHM();
       document.getElementById("manualEnd").value = "";
       document.getElementById("manualNotes").value = "";
 
       renderHistory();
+    }
+
+    function getListNameById(listId) {
+      const lists = loadLists();
+      const list = lists.find(l => l.id === listId);
+      return list ? list.name : "";
     }
 
     function deleteEntry(id) {
@@ -553,11 +828,11 @@
         div.className = "history-item";
         div.innerHTML = `
           <div class="history-title">${item.client}</div>
-          <div><strong>Employé :</strong> ${item.user}</div>
+          <div><strong>Liste :</strong> ${item.listName || "-"}</div>
           <div><strong>Date :</strong> ${item.date}</div>
           <div><strong>Début :</strong> ${item.start} | <strong>Fin :</strong> ${item.end}</div>
           <div><strong>Durée :</strong> ${formatHours(item.durationHours)} (${item.type})</div>
-          <div><strong>Notes :</strong> ${item.notes ? item.notes : "-"}</div>
+          <div><strong>Remarque :</strong> ${item.notes ? item.notes : "-"}</div>
           <button class="danger" onclick="deleteEntry(${item.id})">Supprimer</button>
         `;
         historyList.appendChild(div);
@@ -577,7 +852,7 @@
       if (timerData && timerData.user === currentUser) {
         startBtn.disabled = true;
         stopBtn.disabled = false;
-        timerStatus.textContent = "Minuteur actif pour " + timerData.client + " le " + timerData.date;
+        timerStatus.textContent = "Minuteur actif pour " + timerData.client + " - " + timerData.listName;
       } else {
         startBtn.disabled = false;
         stopBtn.disabled = true;
@@ -618,6 +893,8 @@
       updateTimerUI();
 
       if (timerData && timerData.user === currentUser) {
+        document.getElementById("timerList").value = timerData.listId;
+        refreshTimerClients();
         document.getElementById("timerClient").value = timerData.client || "";
         document.getElementById("timerDate").value = timerData.date || todayDate();
         document.getElementById("timerNotes").value = timerData.notes || "";
@@ -630,6 +907,7 @@
     if (getCurrentUser()) {
       showApp();
     } else {
+      ensureDefaultData();
       document.getElementById("manualDate").value = todayDate();
       document.getElementById("timerDate").value = todayDate();
       document.getElementById("manualStart").value = currentTimeHM();
