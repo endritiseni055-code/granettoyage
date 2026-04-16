@@ -1,117 +1,639 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>Granettoyage</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Granettoyage</title>
+  <style>
+    * { box-sizing: border-box; }
 
-<style>
-body {font-family: Arial; background:#f4f7fb; margin:0;}
-.header {background:#0f172a; color:white; padding:20px; text-align:center;}
-.container {max-width:800px; margin:auto; padding:20px;}
-.card {background:white; padding:20px; margin-bottom:20px; border-radius:10px;}
-input, button {width:100%; padding:10px; margin-top:10px;}
-button {background:#0f172a; color:white; border:none;}
-li {margin-bottom:5px;}
-</style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      color: #1f2937;
+    }
+
+    .header {
+      background: #0f172a;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .header p {
+      margin: 8px 0 0;
+      color: #cbd5e1;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 20px auto;
+      padding: 12px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+
+    h2, h3 {
+      margin-top: 0;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      margin-bottom: 6px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    input, select, button, textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      font-size: 16px;
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    button {
+      background: #0f172a;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button.secondary {
+      background: #475569;
+    }
+
+    button.danger {
+      background: #b91c1c;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid-2 {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .grid-3 {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .timer-box {
+      background: #0f172a;
+      color: white;
+      padding: 18px;
+      border-radius: 16px;
+      text-align: center;
+    }
+
+    .timer-value {
+      font-size: 38px;
+      font-weight: bold;
+      margin: 10px 0;
+      letter-spacing: 1px;
+    }
+
+    .small {
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    .top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #e2e8f0;
+      color: #0f172a;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .history-item {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: #fff;
+    }
+
+    .history-title {
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .actions button {
+      width: auto;
+      flex: 1;
+      min-width: 140px;
+    }
+
+    .empty {
+      padding: 14px;
+      border: 1px dashed #cbd5e1;
+      border-radius: 12px;
+      color: #64748b;
+      background: #f8fafc;
+    }
+
+    @media (max-width: 768px) {
+      .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .timer-value {
+        font-size: 32px;
+      }
+
+      .header h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
 </head>
-
 <body>
+  <div class="header">
+    <h1>Granettoyage</h1>
+    <p>Suivi des heures de travail</p>
+  </div>
 
-<div class="header">
-<h1>Granettoyage</h1>
-<p>Suivi des heures de travail</p>
-</div>
+  <div class="container">
 
-<div class="container">
+    <div class="card" id="loginCard">
+      <h2>Connexion employé</h2>
+      <label for="user">Prénom / identifiant</label>
+      <input id="user" placeholder="Ex: Albania" />
 
-<div class="card" id="login">
-<h2>Connexion</h2>
-<input id="user" placeholder="Identifiant">
-<input id="pass" type="password" placeholder="Mot de passe">
-<button onclick="login()">Se connecter</button>
-</div>
+      <label for="pass">Mot de passe</label>
+      <input id="pass" type="password" placeholder="Mot de passe" />
 
-<div class="card" id="app" style="display:none;">
-<h2>Ajouter heure</h2>
-<input id="client" placeholder="Client">
-<input id="start" type="datetime-local">
-<input id="end" type="datetime-local">
-<button onclick="save()">Enregistrer</button>
+      <button onclick="login()">Se connecter</button>
+      <p class="small">Compte demandé : Albania / Pontarlier25</p>
+    </div>
 
-<h3>Historique</h3>
-<ul id="list"></ul>
+    <div id="app" style="display:none;">
+      <div class="card">
+        <div class="top-row">
+          <div>
+            <h2 style="margin-bottom:6px;">Bienvenue <span id="employeeName"></span></h2>
+            <div class="small">Les heures sont enregistrées automatiquement sur cet appareil.</div>
+          </div>
+          <div class="actions">
+            <button class="secondary" onclick="logout()">Se déconnecter</button>
+          </div>
+        </div>
+      </div>
 
-<button onclick="logout()">Se déconnecter</button>
-</div>
+      <div class="grid grid-2">
+        <div class="card">
+          <h3>Minuteur</h3>
 
-</div>
+          <label for="timerClient">Client</label>
+          <input id="timerClient" placeholder="Nom du client" />
 
-<script>
+          <label for="timerDate">Date</label>
+          <input id="timerDate" type="date" />
 
-// 🔐 IDENTIFIANTS
-const users = {
-  admin: "admin123",
-  sarah: "sarah123",
-  Albania: "Pontarlier25"
-};
+          <label for="timerNotes">Notes</label>
+          <textarea id="timerNotes" placeholder="Détails du travail"></textarea>
 
-function login(){
-  const u = document.getElementById("user").value;
-  const p = document.getElementById("pass").value;
+          <div class="timer-box">
+            <div>Temps en cours</div>
+            <div class="timer-value" id="timerDisplay">00:00:00</div>
+            <div id="timerStatus" class="small" style="color:#cbd5e1;">Aucun minuteur en cours</div>
+          </div>
 
-  if(users[u] === p){
-    localStorage.setItem("user", u);
-    document.getElementById("login").style.display="none";
-    document.getElementById("app").style.display="block";
-    load();
-  } else {
-    alert("Identifiants incorrects");
-  }
-}
+          <div class="actions" style="margin-top:12px;">
+            <button onclick="startTimer()" id="startBtn">Démarrer</button>
+            <button onclick="stopTimer()" id="stopBtn" class="secondary" disabled>Arrêter et sauvegarder</button>
+          </div>
+        </div>
 
-function logout(){
-  localStorage.removeItem("user");
-  location.reload();
-}
+        <div class="card">
+          <h3>Saisie manuelle</h3>
 
-function save(){
-  let data = JSON.parse(localStorage.getItem("heures") || "[]");
+          <label for="manualClient">Client</label>
+          <input id="manualClient" placeholder="Nom du client" />
 
-  data.push({
-    user: localStorage.getItem("user"),
-    client: document.getElementById("client").value,
-    start: document.getElementById("start").value,
-    end: document.getElementById("end").value
-  });
+          <label for="manualDate">Date</label>
+          <input id="manualDate" type="date" />
 
-  localStorage.setItem("heures", JSON.stringify(data));
-  load();
-}
+          <div class="grid grid-2">
+            <div>
+              <label for="manualStart">Heure début</label>
+              <input id="manualStart" type="time" />
+            </div>
+            <div>
+              <label for="manualEnd">Heure fin</label>
+              <input id="manualEnd" type="time" />
+            </div>
+          </div>
 
-function load(){
-  let data = JSON.parse(localStorage.getItem("heures") || "[]");
-  let list = document.getElementById("list");
-  list.innerHTML = "";
+          <label for="manualNotes">Notes</label>
+          <textarea id="manualNotes" placeholder="Détails du travail"></textarea>
 
-  let currentUser = localStorage.getItem("user");
+          <button onclick="saveManualEntry()">Enregistrer la saisie</button>
+        </div>
+      </div>
 
-  data
-    .filter(e => e.user === currentUser)
-    .forEach(e => {
-      let li = document.createElement("li");
-      li.innerText = e.client + " | " + e.start + " → " + e.end;
-      list.appendChild(li);
-    });
-}
+      <div class="card">
+        <div class="top-row">
+          <h3 style="margin:0;">Historique des heures</h3>
+          <span class="badge" id="totalHoursBadge">Total : 0.00 h</span>
+        </div>
+        <div id="historyList" style="margin-top:14px;"></div>
+      </div>
+    </div>
+  </div>
 
-// auto login
-if(localStorage.getItem("user")){
-  document.getElementById("login").style.display="none";
-  document.getElementById("app").style.display="block";
-  load();
-}
+  <script>
+    const users = {
+      "Albania": "Pontarlier25",
+      "Sarah": "sarah123",
+      "Yanis": "yanis123",
+      "Admin": "admin123"
+    };
 
-</script>
+    const HOURS_KEY = "granettoyage_hours_v2";
+    const USER_KEY = "granettoyage_current_user";
+    const TIMER_KEY = "granettoyage_running_timer_v2";
 
+    let timerInterval = null;
+
+    function todayDate() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return y + "-" + m + "-" + day;
+    }
+
+    function currentTimeHM() {
+      const d = new Date();
+      const h = String(d.getHours()).padStart(2, "0");
+      const m = String(d.getMinutes()).padStart(2, "0");
+      return h + ":" + m;
+    }
+
+    function formatSeconds(totalSeconds) {
+      const sec = Math.max(0, Math.floor(totalSeconds));
+      const h = String(Math.floor(sec / 3600)).padStart(2, "0");
+      const m = String(Math.floor((sec % 3600) / 60)).padStart(2, "0");
+      const s = String(sec % 60).padStart(2, "0");
+      return h + ":" + m + ":" + s;
+    }
+
+    function formatHours(hours) {
+      return Number(hours || 0).toFixed(2) + " h";
+    }
+
+    function loadHours() {
+      return JSON.parse(localStorage.getItem(HOURS_KEY) || "[]");
+    }
+
+    function saveHours(data) {
+      localStorage.setItem(HOURS_KEY, JSON.stringify(data));
+    }
+
+    function getCurrentUser() {
+      return localStorage.getItem(USER_KEY);
+    }
+
+    function getRunningTimer() {
+      return JSON.parse(localStorage.getItem(TIMER_KEY) || "null");
+    }
+
+    function setRunningTimer(data) {
+      localStorage.setItem(TIMER_KEY, JSON.stringify(data));
+    }
+
+    function clearRunningTimer() {
+      localStorage.removeItem(TIMER_KEY);
+    }
+
+    function login() {
+      const u = document.getElementById("user").value.trim();
+      const p = document.getElementById("pass").value;
+
+      if (users[u] && users[u] === p) {
+        localStorage.setItem(USER_KEY, u);
+        showApp();
+      } else {
+        alert("Identifiants incorrects");
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem(USER_KEY);
+      stopVisualTimerOnly();
+      document.getElementById("loginCard").style.display = "block";
+      document.getElementById("app").style.display = "none";
+    }
+
+    function showApp() {
+      const currentUser = getCurrentUser();
+      if (!currentUser) return;
+
+      document.getElementById("loginCard").style.display = "none";
+      document.getElementById("app").style.display = "block";
+      document.getElementById("employeeName").textContent = currentUser;
+
+      document.getElementById("timerDate").value = todayDate();
+      document.getElementById("manualDate").value = todayDate();
+      document.getElementById("manualStart").value = currentTimeHM();
+
+      renderHistory();
+      restoreRunningTimer();
+    }
+
+    function startTimer() {
+      const currentUser = getCurrentUser();
+      const client = document.getElementById("timerClient").value.trim();
+      const date = document.getElementById("timerDate").value;
+      const notes = document.getElementById("timerNotes").value.trim();
+
+      if (!currentUser) {
+        alert("Veuillez vous connecter");
+        return;
+      }
+
+      if (!client) {
+        alert("Merci de renseigner le client");
+        return;
+      }
+
+      if (!date) {
+        alert("Merci de renseigner la date");
+        return;
+      }
+
+      const existingTimer = getRunningTimer();
+      if (existingTimer) {
+        alert("Un minuteur est déjà en cours");
+        return;
+      }
+
+      const timerData = {
+        user: currentUser,
+        client: client,
+        date: date,
+        notes: notes,
+        startTimestamp: Date.now()
+      };
+
+      setRunningTimer(timerData);
+      updateTimerUI();
+      startVisualTimer();
+    }
+
+    function stopTimer() {
+      const timerData = getRunningTimer();
+      if (!timerData) return;
+
+      const endTimestamp = Date.now();
+      const durationSeconds = Math.floor((endTimestamp - timerData.startTimestamp) / 1000);
+      const durationHours = durationSeconds / 3600;
+
+      const startDate = new Date(timerData.startTimestamp);
+      const endDate = new Date(endTimestamp);
+
+      const startTime = String(startDate.getHours()).padStart(2, "0") + ":" + String(startDate.getMinutes()).padStart(2, "0");
+      const endTime = String(endDate.getHours()).padStart(2, "0") + ":" + String(endDate.getMinutes()).padStart(2, "0");
+
+      const hours = loadHours();
+      hours.unshift({
+        id: Date.now(),
+        user: timerData.user,
+        client: timerData.client,
+        date: timerData.date,
+        start: startTime,
+        end: endTime,
+        notes: timerData.notes,
+        durationHours: durationHours,
+        durationSeconds: durationSeconds,
+        type: "Minuteur"
+      });
+
+      saveHours(hours);
+      clearRunningTimer();
+      stopVisualTimerOnly();
+
+      document.getElementById("timerClient").value = "";
+      document.getElementById("timerNotes").value = "";
+      document.getElementById("timerDate").value = todayDate();
+
+      updateTimerUI();
+      renderHistory();
+    }
+
+    function saveManualEntry() {
+      const currentUser = getCurrentUser();
+      const client = document.getElementById("manualClient").value.trim();
+      const date = document.getElementById("manualDate").value;
+      const start = document.getElementById("manualStart").value;
+      const end = document.getElementById("manualEnd").value;
+      const notes = document.getElementById("manualNotes").value.trim();
+
+      if (!currentUser) {
+        alert("Veuillez vous connecter");
+        return;
+      }
+
+      if (!client || !date || !start || !end) {
+        alert("Merci de remplir client, date, début et fin");
+        return;
+      }
+
+      const startDate = new Date(date + "T" + start);
+      const endDate = new Date(date + "T" + end);
+
+      if (endDate <= startDate) {
+        alert("L'heure de fin doit être après l'heure de début");
+        return;
+      }
+
+      const durationSeconds = Math.floor((endDate - startDate) / 1000);
+      const durationHours = durationSeconds / 3600;
+
+      const hours = loadHours();
+      hours.unshift({
+        id: Date.now(),
+        user: currentUser,
+        client: client,
+        date: date,
+        start: start,
+        end: end,
+        notes: notes,
+        durationHours: durationHours,
+        durationSeconds: durationSeconds,
+        type: "Manuel"
+      });
+
+      saveHours(hours);
+
+      document.getElementById("manualClient").value = "";
+      document.getElementById("manualDate").value = todayDate();
+      document.getElementById("manualStart").value = currentTimeHM();
+      document.getElementById("manualEnd").value = "";
+      document.getElementById("manualNotes").value = "";
+
+      renderHistory();
+    }
+
+    function deleteEntry(id) {
+      const ok = confirm("Supprimer cette ligne d'heures ?");
+      if (!ok) return;
+
+      let hours = loadHours();
+      hours = hours.filter(item => item.id !== id);
+      saveHours(hours);
+      renderHistory();
+    }
+
+    function renderHistory() {
+      const currentUser = getCurrentUser();
+      const historyList = document.getElementById("historyList");
+      const totalHoursBadge = document.getElementById("totalHoursBadge");
+
+      let hours = loadHours();
+      hours = hours.filter(item => item.user === currentUser);
+
+      if (hours.length === 0) {
+        historyList.innerHTML = '<div class="empty">Aucune heure enregistrée pour le moment.</div>';
+        totalHoursBadge.textContent = "Total : 0.00 h";
+        return;
+      }
+
+      let total = 0;
+      historyList.innerHTML = "";
+
+      hours.forEach(item => {
+        total += item.durationHours || 0;
+
+        const div = document.createElement("div");
+        div.className = "history-item";
+        div.innerHTML = `
+          <div class="history-title">${item.client}</div>
+          <div><strong>Employé :</strong> ${item.user}</div>
+          <div><strong>Date :</strong> ${item.date}</div>
+          <div><strong>Début :</strong> ${item.start} | <strong>Fin :</strong> ${item.end}</div>
+          <div><strong>Durée :</strong> ${formatHours(item.durationHours)} (${item.type})</div>
+          <div><strong>Notes :</strong> ${item.notes ? item.notes : "-"}</div>
+          <button class="danger" onclick="deleteEntry(${item.id})">Supprimer</button>
+        `;
+        historyList.appendChild(div);
+      });
+
+      totalHoursBadge.textContent = "Total : " + formatHours(total);
+    }
+
+    function updateTimerUI() {
+      const timerData = getRunningTimer();
+      const currentUser = getCurrentUser();
+
+      const startBtn = document.getElementById("startBtn");
+      const stopBtn = document.getElementById("stopBtn");
+      const timerStatus = document.getElementById("timerStatus");
+
+      if (timerData && timerData.user === currentUser) {
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+        timerStatus.textContent = "Minuteur actif pour " + timerData.client + " le " + timerData.date;
+      } else {
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+        timerStatus.textContent = "Aucun minuteur en cours";
+        document.getElementById("timerDisplay").textContent = "00:00:00";
+      }
+    }
+
+    function startVisualTimer() {
+      stopVisualTimerOnly();
+
+      timerInterval = setInterval(() => {
+        const timerData = getRunningTimer();
+        const currentUser = getCurrentUser();
+
+        if (!timerData || timerData.user !== currentUser) {
+          stopVisualTimerOnly();
+          updateTimerUI();
+          return;
+        }
+
+        const elapsedSeconds = Math.floor((Date.now() - timerData.startTimestamp) / 1000);
+        document.getElementById("timerDisplay").textContent = formatSeconds(elapsedSeconds);
+      }, 1000);
+    }
+
+    function stopVisualTimerOnly() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+    }
+
+    function restoreRunningTimer() {
+      const timerData = getRunningTimer();
+      const currentUser = getCurrentUser();
+
+      updateTimerUI();
+
+      if (timerData && timerData.user === currentUser) {
+        document.getElementById("timerClient").value = timerData.client || "";
+        document.getElementById("timerDate").value = timerData.date || todayDate();
+        document.getElementById("timerNotes").value = timerData.notes || "";
+        startVisualTimer();
+      } else {
+        stopVisualTimerOnly();
+      }
+    }
+
+    if (getCurrentUser()) {
+      showApp();
+    } else {
+      document.getElementById("manualDate").value = todayDate();
+      document.getElementById("timerDate").value = todayDate();
+      document.getElementById("manualStart").value = currentTimeHM();
+    }
+  </script>
 </body>
 </html>
