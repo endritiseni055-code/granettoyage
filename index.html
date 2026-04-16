@@ -1,85 +1,117 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Granettoyage</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f7fb;
-      color: #1f2937;
-    }
-    .header {
-      background: #0f172a;
-      color: white;
-      padding: 24px;
-      text-align: center;
-    }
-    .container {
-      max-width: 900px;
-      margin: 24px auto;
-      padding: 16px;
-    }
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-    }
-    h1, h2 {
-      margin-top: 0;
-    }
-    input, select, button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 8px;
-      margin-bottom: 14px;
-      border-radius: 10px;
-      border: 1px solid #cbd5e1;
-      box-sizing: border-box;
-      font-size: 16px;
-    }
-    button {
-      background: #0f172a;
-      color: white;
-      border: none;
-    }
-    .small {
-      color: #64748b;
-      font-size: 14px;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Granettoyage</title>
+
+<style>
+body {font-family: Arial; background:#f4f7fb; margin:0;}
+.header {background:#0f172a; color:white; padding:20px; text-align:center;}
+.container {max-width:800px; margin:auto; padding:20px;}
+.card {background:white; padding:20px; margin-bottom:20px; border-radius:10px;}
+input, button {width:100%; padding:10px; margin-top:10px;}
+button {background:#0f172a; color:white; border:none;}
+li {margin-bottom:5px;}
+</style>
 </head>
+
 <body>
-  <div class="header">
-    <h1>Granettoyage</h1>
-    <p>Suivi des heures de travail</p>
-  </div>
 
-  <div class="container">
-    <div class="card">
-      <h2>Connexion employé</h2>
-      <input type="text" placeholder="Identifiant" />
-      <input type="password" placeholder="Mot de passe" />
-      <button>Se connecter</button>
-      <p class="small">Version démo en cours de construction.</p>
-    </div>
+<div class="header">
+<h1>Granettoyage</h1>
+<p>Suivi des heures de travail</p>
+</div>
 
-    <div class="card">
-      <h2>Nouvelle heure de travail</h2>
-      <input type="text" placeholder="Nom du client" />
-      <input type="datetime-local" />
-      <input type="datetime-local" />
-      <button>Enregistrer</button>
-    </div>
+<div class="container">
 
-    <div class="card">
-      <h2>Historique</h2>
-      <p class="small">Les heures enregistrées apparaîtront ici.</p>
-    </div>
-  </div>
+<div class="card" id="login">
+<h2>Connexion</h2>
+<input id="user" placeholder="Identifiant">
+<input id="pass" type="password" placeholder="Mot de passe">
+<button onclick="login()">Se connecter</button>
+</div>
+
+<div class="card" id="app" style="display:none;">
+<h2>Ajouter heure</h2>
+<input id="client" placeholder="Client">
+<input id="start" type="datetime-local">
+<input id="end" type="datetime-local">
+<button onclick="save()">Enregistrer</button>
+
+<h3>Historique</h3>
+<ul id="list"></ul>
+
+<button onclick="logout()">Se déconnecter</button>
+</div>
+
+</div>
+
+<script>
+
+// 🔐 IDENTIFIANTS
+const users = {
+  admin: "admin123",
+  sarah: "sarah123",
+  Albania: "Pontarlier25"
+};
+
+function login(){
+  const u = document.getElementById("user").value;
+  const p = document.getElementById("pass").value;
+
+  if(users[u] === p){
+    localStorage.setItem("user", u);
+    document.getElementById("login").style.display="none";
+    document.getElementById("app").style.display="block";
+    load();
+  } else {
+    alert("Identifiants incorrects");
+  }
+}
+
+function logout(){
+  localStorage.removeItem("user");
+  location.reload();
+}
+
+function save(){
+  let data = JSON.parse(localStorage.getItem("heures") || "[]");
+
+  data.push({
+    user: localStorage.getItem("user"),
+    client: document.getElementById("client").value,
+    start: document.getElementById("start").value,
+    end: document.getElementById("end").value
+  });
+
+  localStorage.setItem("heures", JSON.stringify(data));
+  load();
+}
+
+function load(){
+  let data = JSON.parse(localStorage.getItem("heures") || "[]");
+  let list = document.getElementById("list");
+  list.innerHTML = "";
+
+  let currentUser = localStorage.getItem("user");
+
+  data
+    .filter(e => e.user === currentUser)
+    .forEach(e => {
+      let li = document.createElement("li");
+      li.innerText = e.client + " | " + e.start + " → " + e.end;
+      list.appendChild(li);
+    });
+}
+
+// auto login
+if(localStorage.getItem("user")){
+  document.getElementById("login").style.display="none";
+  document.getElementById("app").style.display="block";
+  load();
+}
+
+</script>
+
 </body>
 </html>
