@@ -1,10 +1,85 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Granettoyage</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      color: #1f2937;
+    }
+    .header {
+      background: #0f172a;
+      color: white;
+      padding: 24px;
+      text-align: center;
+    }
+    .container {
+      max-width: 900px;
+      margin: 24px auto;
+      padding: 16px;
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+    h1, h2 {
+      margin-top: 0;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+      margin-bottom: 14px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+    button {
+      background: #0f172a;
+      color: white;
+      border: none;
+    }
+    .small {
+      color: #64748b;
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Granettoyage</h1>
-  <p>Site en cours de création 🔥</p>
+  <div class="header">
+    <h1>Granettoyage</h1>
+    <p>Suivi des heures de travail</p>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <h2>Connexion employé</h2>
+      <input type="text" placeholder="Identifiant" />
+      <input type="password" placeholder="Mot de passe" />
+      <button>Se connecter</button>
+      <p class="small">Version démo en cours de construction.</p>
+    </div>
+
+    <div class="card">
+      <h2>Nouvelle heure de travail</h2>
+      <input type="text" placeholder="Nom du client" />
+      <input type="datetime-local" />
+      <input type="datetime-local" />
+      <button>Enregistrer</button>
+    </div>
+
+    <div class="card">
+      <h2>Historique</h2>
+      <p class="small">Les heures enregistrées apparaîtront ici.</p>
+    </div>
+  </div>
 </body>
 </html>
