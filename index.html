@@ -10,25 +10,48 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f4f7fb;
+      background: linear-gradient(180deg, #f8fbff 0%, #eef4f8 100%);
       color: #1f2937;
     }
 
     .header {
-      background: #0f172a;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
       color: white;
-      padding: 20px;
+      padding: 24px 16px;
       text-align: center;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.25);
     }
 
-    .header h1 {
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      width: 62px;
+      height: 62px;
+      border-radius: 18px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 18px rgba(255,255,255,0.15);
+      flex-shrink: 0;
+    }
+
+    .brand-text h1 {
       margin: 0;
-      font-size: 28px;
+      font-size: 30px;
+      letter-spacing: 0.5px;
     }
 
-    .header p {
-      margin: 8px 0 0;
+    .brand-text p {
+      margin: 6px 0 0;
       color: #cbd5e1;
+      font-size: 14px;
     }
 
     .container {
@@ -39,14 +62,16 @@
 
     .card {
       background: white;
-      border-radius: 16px;
+      border-radius: 20px;
       padding: 18px;
       margin-bottom: 16px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      border: 1px solid #e2e8f0;
     }
 
     h2, h3 {
       margin-top: 0;
+      color: #0f172a;
     }
 
     label {
@@ -55,14 +80,16 @@
       margin-bottom: 6px;
       font-weight: bold;
       font-size: 14px;
+      color: #334155;
     }
 
     input, select, button, textarea {
       width: 100%;
       padding: 12px;
-      border-radius: 10px;
+      border-radius: 12px;
       border: 1px solid #cbd5e1;
       font-size: 16px;
+      background: white;
     }
 
     textarea {
@@ -76,6 +103,13 @@
       border: none;
       cursor: pointer;
       margin-top: 10px;
+      font-weight: bold;
+      transition: 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      opacity: 0.96;
     }
 
     button.secondary {
@@ -93,6 +127,7 @@
     button:disabled {
       opacity: 0.6;
       cursor: not-allowed;
+      transform: none;
     }
 
     .grid {
@@ -104,23 +139,20 @@
       grid-template-columns: 1fr 1fr;
     }
 
-    .grid-3 {
-      grid-template-columns: 1fr 1fr 1fr;
-    }
-
     .timer-box {
-      background: #0f172a;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
       color: white;
       padding: 18px;
-      border-radius: 16px;
+      border-radius: 18px;
       text-align: center;
+      margin-top: 14px;
     }
 
     .timer-value {
-      font-size: 38px;
+      font-size: 40px;
       font-weight: bold;
       margin: 10px 0;
-      letter-spacing: 1px;
+      letter-spacing: 2px;
     }
 
     .small {
@@ -148,7 +180,7 @@
 
     .history-item, .list-item, .client-item {
       border: 1px solid #e2e8f0;
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 12px;
       margin-bottom: 10px;
       background: #fff;
@@ -157,6 +189,7 @@
     .history-title, .list-title, .client-title {
       font-weight: bold;
       margin-bottom: 6px;
+      color: #0f172a;
     }
 
     .actions {
@@ -181,14 +214,22 @@
 
     .sub-box {
       border: 1px solid #e2e8f0;
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 12px;
       margin-top: 12px;
       background: #f8fafc;
     }
 
+    .footer-note {
+      text-align: center;
+      color: #64748b;
+      font-size: 13px;
+      margin-top: 12px;
+      padding-bottom: 12px;
+    }
+
     @media (max-width: 768px) {
-      .grid-2, .grid-3 {
+      .grid-2 {
         grid-template-columns: 1fr;
       }
 
@@ -196,20 +237,37 @@
         font-size: 32px;
       }
 
-      .header h1 {
+      .brand-text h1 {
         font-size: 24px;
+      }
+
+      .logo {
+        width: 54px;
+        height: 54px;
       }
     }
   </style>
 </head>
 <body>
   <div class="header">
-    <h1>Granettoyage</h1>
-    <p>Suivi des heures de travail</p>
+    <div class="brand">
+      <div class="logo">
+        <svg width="36" height="36" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="26" width="30" height="20" rx="4" fill="#0F172A"/>
+          <rect x="34" y="18" width="6" height="8" rx="2" fill="#0F172A"/>
+          <path d="M40 30L50 20" stroke="#16A34A" stroke-width="5" stroke-linecap="round"/>
+          <path d="M47 18L53 24" stroke="#16A34A" stroke-width="5" stroke-linecap="round"/>
+          <path d="M18 36H31" stroke="white" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1>Granettoyage</h1>
+        <p>Suivi des heures de travail</p>
+      </div>
+    </div>
   </div>
 
   <div class="container">
-
     <div class="card" id="loginCard">
       <h2>Connexion</h2>
 
@@ -310,6 +368,10 @@
         </div>
         <div id="historyList" style="margin-top:14px;"></div>
       </div>
+    </div>
+
+    <div class="footer-note">
+      Granettoyage • version locale améliorée
     </div>
   </div>
 
@@ -427,14 +489,11 @@
 
     function showApp() {
       ensureDefaultData();
-
       document.getElementById("loginCard").style.display = "none";
       document.getElementById("app").style.display = "block";
-
       document.getElementById("timerDate").value = todayDate();
       document.getElementById("manualDate").value = todayDate();
       document.getElementById("manualStart").value = currentTimeHM();
-
       renderLists();
       fillListSelects();
       renderHistory();
@@ -644,31 +703,11 @@
       const date = document.getElementById("timerDate").value;
       const notes = document.getElementById("timerNotes").value.trim();
 
-      if (!currentUser) {
-        alert("Veuillez vous connecter");
-        return;
-      }
-
-      if (!selectedListId) {
-        alert("Merci de choisir une liste");
-        return;
-      }
-
-      if (!client) {
-        alert("Merci de choisir un client");
-        return;
-      }
-
-      if (!date) {
-        alert("Merci de renseigner la date");
-        return;
-      }
-
-      const existingTimer = getRunningTimer();
-      if (existingTimer) {
-        alert("Un minuteur est déjà en cours");
-        return;
-      }
+      if (!currentUser) return alert("Veuillez vous connecter");
+      if (!selectedListId) return alert("Merci de choisir une liste");
+      if (!client) return alert("Merci de choisir un client");
+      if (!date) return alert("Merci de renseigner la date");
+      if (getRunningTimer()) return alert("Un minuteur est déjà en cours");
 
       const listName = getListNameById(Number(selectedListId));
 
@@ -719,10 +758,8 @@
       saveHours(hours);
       clearRunningTimer();
       stopVisualTimerOnly();
-
       document.getElementById("timerNotes").value = "";
       document.getElementById("timerDate").value = todayDate();
-
       updateTimerUI();
       renderHistory();
     }
@@ -736,28 +773,14 @@
       const end = document.getElementById("manualEnd").value;
       const notes = document.getElementById("manualNotes").value.trim();
 
-      if (!currentUser) {
-        alert("Veuillez vous connecter");
-        return;
-      }
-
-      if (!selectedListId) {
-        alert("Merci de choisir une liste");
-        return;
-      }
-
-      if (!client || !date || !start || !end) {
-        alert("Merci de remplir liste, client, date, début et fin");
-        return;
-      }
+      if (!currentUser) return alert("Veuillez vous connecter");
+      if (!selectedListId) return alert("Merci de choisir une liste");
+      if (!client || !date || !start || !end) return alert("Merci de remplir liste, client, date, début et fin");
 
       const startDate = new Date(date + "T" + start);
       const endDate = new Date(date + "T" + end);
 
-      if (endDate <= startDate) {
-        alert("L'heure de fin doit être après l'heure de début");
-        return;
-      }
+      if (endDate <= startDate) return alert("L'heure de fin doit être après l'heure de début");
 
       const durationSeconds = Math.floor((endDate - startDate) / 1000);
       const durationHours = durationSeconds / 3600;
@@ -779,12 +802,10 @@
       });
 
       saveHours(hours);
-
       document.getElementById("manualDate").value = todayDate();
       document.getElementById("manualStart").value = currentTimeHM();
       document.getElementById("manualEnd").value = "";
       document.getElementById("manualNotes").value = "";
-
       renderHistory();
     }
 
@@ -795,9 +816,7 @@
     }
 
     function deleteEntry(id) {
-      const ok = confirm("Supprimer cette ligne d'heures ?");
-      if (!ok) return;
-
+      if (!confirm("Supprimer cette ligne d'heures ?")) return;
       let hours = loadHours();
       hours = hours.filter(item => item.id !== id);
       saveHours(hours);
@@ -809,8 +828,7 @@
       const historyList = document.getElementById("historyList");
       const totalHoursBadge = document.getElementById("totalHoursBadge");
 
-      let hours = loadHours();
-      hours = hours.filter(item => item.user === currentUser);
+      let hours = loadHours().filter(item => item.user === currentUser);
 
       if (hours.length === 0) {
         historyList.innerHTML = '<div class="empty">Aucune heure enregistrée pour le moment.</div>';
